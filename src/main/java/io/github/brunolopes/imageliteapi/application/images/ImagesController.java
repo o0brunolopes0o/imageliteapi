@@ -22,9 +22,10 @@ public class ImagesController {
             @RequestParam("tags") List<String> tags
     ){
 
-        long maxFileSize = 7 * 1024 * 1024;
-        double getSizeFile = file.getSize() / (1024.0 * 1024.0);
+        long maxFileSize = 7 * 1024 * 1024; //Tamanho máximo do arquivo permitido
+        double getSizeFile = file.getSize() / (1024.0 * 1024.0); //Converte em MB
 
+        //Verifica se o tamanho não é maior que o maxFileSize definido
         if (file.getSize() > maxFileSize) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
