@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -24,6 +26,7 @@ import java.util.List;
 public class ImagesController {
 
     private final ImageService service;
+    private final ImageMapper mapper;
 
     @PostMapping
     public ResponseEntity<?> save(
@@ -39,7 +42,7 @@ public class ImagesController {
         if (file.getSize() > maxFileSize) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(String.format("O tamanho máximo do arquivo deve ser de 6MB, seu arquivo tem %.2fMB",
+                    .body(String.format("O tamanho do arquivo nao pode passar dos 7MB, seu arquivo tem %.2fMB",
                             getSizeFile));
         }
 
@@ -49,16 +52,25 @@ public class ImagesController {
 
         MediaType.valueOf(file.getContentType());
 
-        Image image = Image.builder()
-                        .name(name)
-                        .tags(String.join(",", tags))
-                        .size(file.getSize())
-                        .extension(ImageExtension.valueOf(MediaType.valueOf(file.getContentType())))
-                        .file(file.getBytes())
-                        .build();
+        Image image = mapper.mapToImage(file, name, tags);
 
-        service.save(image);
+        Image savedImage = service.save(image);
 
-        return ResponseEntity.ok().build();
+        URI imageUri = buildImageURL(savedImage);
+
+
+        return ResponseEntity.created(imageUri).build();
+    }
+
+    private URI buildImageURL(Image image){
+        String imagePath = "/" + image.getId();
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path(imagePath)
+                .build()
+                .toUri();
+
+        log.info("URL montada: {}", uri);
+        return uri;
     }
 }
