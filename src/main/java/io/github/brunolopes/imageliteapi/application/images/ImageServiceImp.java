@@ -1,12 +1,14 @@
 package io.github.brunolopes.imageliteapi.application.images;
 
 import io.github.brunolopes.imageliteapi.domain.entity.Image;
+import io.github.brunolopes.imageliteapi.domain.enums.ImageExtension;
 import io.github.brunolopes.imageliteapi.domain.service.ImageService;
 import io.github.brunolopes.imageliteapi.infra.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,5 +26,10 @@ public class ImageServiceImp implements ImageService {
     @Override
     public Optional<Image> getById(String id) {
         return repository.findById(id);
+    }
+
+    @Override
+    public List<Image> search(ImageExtension extension, String query) {
+        return repository.findByExtensionAndNameOrTagsLike(extension, query);
     }
 }

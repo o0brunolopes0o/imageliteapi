@@ -23,7 +23,7 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column (name = "name") //Name caso precise trocar o nome da coluna
+    @Column (name = "name")
     private String name;
 
     @Column (name = "size")
