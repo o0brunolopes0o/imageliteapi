@@ -9,6 +9,7 @@ import java.time.LocalDate;
 @Data
 @Builder
 public class ImageDTO {
+    private String id;
     private String url;
     private  String name;
     private String extension;
